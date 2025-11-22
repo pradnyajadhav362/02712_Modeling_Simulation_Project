@@ -6,19 +6,40 @@ def make_network(network_type, nnodes, edge_freq, cliq_edge_freq):
     if network_type == 'random':
         G = nx.erdos_renyi_graph(nnodes, edge_freq)
         edges = np.array(list(G.edges()))
-        features = np.random.rand(edges.shape[0], 8)
+        features = np.hstack([
+            np.random.rand(edges.shape[0], 6),
+            np.zeros((edges.shape[0], 1)),
+            np.ones((edges.shape[0], 1))
+        ])
+        for i in range(nnodes):
+            edges = np.vstack([edges, [i, i]])
+            features = np.vstack([features, [0,0,0,0,np.random.random(),np.random.random(),1,1]])
     elif network_type == 'scale_free':
         G = nx.barabasi_albert_graph(nnodes, 3)
         edges = np.array(list(G.edges()))
-        features = np.random.rand(edges.shape[0], 8)
+        features = np.hstack([
+            np.random.rand(edges.shape[0], 6),
+            np.zeros((edges.shape[0], 1)),
+            np.ones((edges.shape[0], 1))
+        ])
+        for i in range(nnodes):
+            edges = np.vstack([edges, [i, i]])
+            features = np.vstack([features, [0,0,0,0,np.random.random(),np.random.random(),1,1]])
     elif network_type == 'small_world':
         G = nx.watts_strogatz_graph(nnodes, 10, 0.1)
         edges = np.array(list(G.edges()))
-        features = np.random.rand(edges.shape[0], 8)
+        features = np.hstack([
+            np.random.rand(edges.shape[0], 6),
+            np.zeros((edges.shape[0], 1)),
+            np.ones((edges.shape[0], 1))
+        ])
+        for i in range(nnodes):
+            edges = np.vstack([edges, [i, i]])
+            features = np.vstack([features, [0,0,0,0,np.random.random(),np.random.random(),1,1]])
     elif network_type == 'cliq_random':
         degrees = [0]*nnodes
         edges = []
-        features = [] # (11) cliq1, cliq2, hi_mut_source, hi_mut_target, rand1, rand2, rand3, rand4, rand5, self_loop, intercept
+        features = []
         for i in range(nnodes-1):
             for j in range(i+1,nnodes):
                 if ((i<100 and j<100) and np.random.random()<cliq_edge_freq) or np.random.random()<edge_freq:
@@ -41,7 +62,7 @@ def make_network(network_type, nnodes, edge_freq, cliq_edge_freq):
                     degrees[i] += 1
                     degrees[j] += 1
         for i in range(nnodes):
-            edges.append([i,i])
+            edges.append([i, i])
             features.append([0,0,0,0,np.random.random(),np.random.random(),1,1])
         edges = np.array(edges)
         features = np.array(features)
